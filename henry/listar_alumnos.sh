@@ -3,8 +3,8 @@
 archivo=~/$CREACION/salida/$FILENAME.txt
 
 if [ -f "$archivo" ]; then
-    echo "Mostrando alumnos ordenados por número de padrón:"
+    echo "mostrando alumnos ordenados por padrón"
     sort -n "$archivo"
 else
-    echo "No se encontró el archivo."
+    echo "no se encontró el archivo."
 fi
