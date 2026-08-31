@@ -6,5 +6,5 @@ if [ -f "$archivo" ]; then
     echo "mostrando alumnos ordenados por padrón"
     sort -n "$archivo"
 else
-    echo "no se encontró el archivo."
+    echo "no se encontró el archivo"
 fi
