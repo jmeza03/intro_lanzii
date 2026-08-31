@@ -1,0 +1,13 @@
+Como podríamos Defender este TP:
+  1) Primero elegimos a Algunos de Nosotros que quiera explicar cómo funciona el main.sh. Si bien son 7 Opciones, podríamos hacer 8 explicaciones involucrando el main que seria el bucle.
+  2) Cada uno de nosotros explica 2 opciones (Que Serian 8).
+  3) MAIN.SH: 
+    a) Creamos la variable de Entorno FILENAME donde almacenaremos el FILENAME.txt, que estará Alojado en salida. Esta variable guardara en su interior el listado de Alumnos por padron.
+    b) Después uso un case , que sirve para Comprobar qué opción eligió el usuario.
+    c) Si elige la opción 1, ejecuto crear_entorno.sh, que se Encarga de crear las carpetas Necesarias.
+    d) Si elige la opción 2, ejecuto correr_proceso.sh, que se encarga de correr el proceso de consolidación.
+    e) La opción 3 ejecuta listar_alumnos.sh, que muestra los alumnos ordenados por padrón.
+    f) La opción 4 ejecuta notas_altas.sh, que muestra las 10 notas más altas.
+    g) La opción 5 ejecuta alumno_padron.sh, que permite buscar un alumno ingresando su número de padrón.
+    h) La opción 6 ejecuta visualizar_log.sh, que muestra el contenido del archivo de log.
+    i) Y Finalmente, si el usuario elige la Opción 7, uso break, que rompe el while true y Termina el programa.
