@@ -3,8 +3,8 @@
 archivo=~/$CREACION/salida/$FILENAME.txt
 
 if [ -f "$archivo" ]; then
-    echo "mostrando las 10 notas más altas"
-    sort -k5 -nr "$archivo" | head -n 10
+    echo "mostrando las 10 notas más altas:"
+    sort -k 5 -nr "$archivo" | head -n 10
 else
     echo "no se encontró el archivo"
 fi

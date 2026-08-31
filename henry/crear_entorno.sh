@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export CREACION="$HOME/EPNro1"
-
 if [ -d "$CREACION" ]; then #-d ve si exite el directorio
     echo "el entorno ya existe"
 else

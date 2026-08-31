@@ -1,4 +1,7 @@
 #!/bin/bash
+
+export CREACION="$HOME\EPNro1"
+
 export FILENAME="FILENAME"
 
 while true
