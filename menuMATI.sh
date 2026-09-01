@@ -3,7 +3,42 @@
 # 1. Definimos y exportamos la variable de ambiente
 export FILENAME="FILENAME"
 
+# =====================================================================
+# LÓGICA DE PARÁMETROS: EVALUACIÓN DE LIMPIEZA (-d)
+# =====================================================================
+# Evaluamos de forma lógica si el primer parámetro recibido ($1) es "-d"
+if [ "$1" == "-d" ]; then
+    echo "======================================"
+    echo "     INICIANDO LIMPIEZA DE ENTORNO    "
+    echo "======================================"
 
+    # 1. Buscamos y matamos el proceso en segundo plano
+    echo "Buscando procesos de 'consolidar.sh' en background..."
+    
+    # pkill -f busca el patrón del nombre del script en la lista de procesos activos y los mata
+    if pkill -f "consolidar.sh" 2>/dev/null; then
+        echo "--> Proceso consolidar.sh detenido exitosamente."
+    else
+        echo "--> No se encontraron procesos activos en segundo plano."
+    fi
+
+    # 2. Eliminamos la carpeta del entorno EPNro1 de forma recursiva (-r) y forzada (-f)
+    DIR_BASE="$HOME/Documentos/EPNro1"
+    if [ -d "$DIR_BASE" ]; then
+        echo "Eliminando la carpeta $DIR_BASE y todo su contenido..."
+        rm -rf "$DIR_BASE"
+        echo "--> ¡Entorno borrado con éxito!"
+    else
+        echo "--> El entorno $DIR_BASE ya se encontraba vacío o no existía."
+    fi
+
+    echo "======================================"
+    exit 0 # Salimos del script inmediatamente sin abrir el menú
+fi
+# =====================================================================
+
+
+# Si no se pasó el parámetro "-d", el script continúa normalmente al menú interactivo:
 
 while true
 do
@@ -25,11 +60,73 @@ do
     case $opcion in
 
         1) echo "" # Crear entorno
-           mkdir -p ~/Documentos/EPNro1/entrada && echo "Creando carpeta entrada... "
-           mkdir -p ~/Documentos/EPNro1/salida && echo "Creando carpeta salida... "
-           mkdir -p ~/Documentos/EPNro1/procesado && echo "Creando carpeta procesado... "
-           echo "Carpetas creadas en ~/Documentos/EPNro1"
-           echo "";;
+            echo "Creando estructura de carpetas..."
+            mkdir -p ~/Documentos/EPNro1/entrada && echo "--> Carpeta entrada... [OK]"
+            mkdir -p ~/Documentos/EPNro1/salida && echo "--> Carpeta salida... [OK]"
+            mkdir -p ~/Documentos/EPNro1/procesado && echo "--> Carpeta procesado... [OK]"
+            
+            echo "Autogenerando script consolidar.sh..."
+
+            # Usamos un Heredoc con 'EOF' para escribir el archivo de forma literal
+            cat << 'EOF' > ~/Documentos/EPNro1/consolidar.sh
+#!/bin/bash
+
+# Rutas absolutas del proyecto
+DIR_BASE="$HOME/Documentos/EPNro1"
+DIR_ENTRADA="$DIR_BASE/entrada"
+DIR_SALIDA="$DIR_BASE/salida"
+DIR_PROCESADO="$DIR_BASE/procesado"
+ARCHIVO_LOG="$DIR_BASE/procesado.log"
+
+# Aseguramos que existan las carpetas necesarias
+mkdir -p "$DIR_ENTRADA" "$DIR_SALIDA" "$DIR_PROCESADO"
+
+# 1. VALIDACIÓN LOGICA DE LA VARIABLE DE AMBIENTE EXTERNA
+if [ -z "$FILENAME" ]; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] El servicio no pudo iniciar: La variable de ambiente FILENAME no está definida." >> "$ARCHIVO_LOG"
+    exit 1
+fi
+
+# Registramos el inicio exitoso del servicio en el log
+echo "$(date '+%Y-%m-%d %H:%M:%S') [SISTEMA] Servicio iniciado. Consolidando datos en: $DIR_SALIDA/$FILENAME.txt" >> "$ARCHIVO_LOG"
+
+# 2. Bucle infinito para monitoreo periódico
+while true
+do
+    for archivo in "$DIR_ENTRADA"/*
+    do
+        if [ -f "$archivo" ]; then
+            nombre_archivo=$(basename "$archivo")
+
+            # Analizamos si el archivo tiene la extensión .txt
+            if [[ "$nombre_archivo" == *.txt ]]; then
+                echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] Procesando archivo de texto: $nombre_archivo" >> "$ARCHIVO_LOG"
+
+                # Adjuntamos la información usando el valor dinámico de la variable $FILENAME
+                cat "$archivo" >> "$DIR_SALIDA/$FILENAME.txt"
+                echo "" >> "$DIR_SALIDA/$FILENAME.txt"
+
+                # Movemos el archivo procesado
+                mv "$archivo" "$DIR_PROCESADO/"
+                echo "$(date '+%Y-%m-%d %H:%M:%S') [EXITO] '$nombre_archivo' consolidado y movido." >> "$ARCHIVO_LOG"
+            else
+                echo "$(date '+%Y-%m-%d %H:%M:%S') [ALERTA] Archivo ignorado (no es .txt): $nombre_archivo" >> "$ARCHIVO_LOG"
+            fi
+        fi
+    done
+
+    # Pausa de 5 segundos
+    sleep 5
+done
+EOF
+
+            # Le otorgamos los permisos de ejecución requeridos al script recién guardado
+            chmod +x ~/Documentos/EPNro1/consolidar.sh
+            echo "--> Script consolidar.sh generado y configurado... [OK]"
+            echo "======================================"
+            echo "¡Entorno y script creados exitosamente!"
+            echo ""
+            ;;
 
         2) echo "" # Correr proceso
          # Verificamos si el proceso ya está corriendo en segundo plano para no duplicarlo
