@@ -18,7 +18,7 @@ crear_entorno() {
 
         touch "$LOG"
 
-        cp consolidar.sh "$ENTORNO/consolidar.sh"
+        cp jesus/consolidar.sh "$ENTORNO/consolidar.sh"
 
         chmod +x "$ENTORNO/consolidar.sh"
 
