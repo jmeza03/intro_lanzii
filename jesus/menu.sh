@@ -18,7 +18,8 @@ crear_entorno() {
 
         touch "$LOG"
 
-        cp consolidar.sh "$ENTORNO/consolidar.sh"
+        DIR_SCRIPT="$(cd "$(dirname "$0")" && pwd)"
+        cp "$DIR_SCRIPT/consolidar.sh" "$ENTORNO/consolidar.sh"
 
         chmod +x "$ENTORNO/consolidar.sh"
 
